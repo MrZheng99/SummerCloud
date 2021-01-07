@@ -1,0 +1,7 @@
+# Project exclude paths
+/base/target/
+/callee/target/
+/caller/target/
+/register/target/
+/register-test/target/
+/summer-boot/target/

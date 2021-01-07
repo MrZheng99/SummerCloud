@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="caller" />
+        <module name="summer-boot" />
+        <module name="callee" />
+        <module name="callee-api" />
+        <module name="rpc-util" />
+        <module name="register-test" />
+        <module name="register" />
+        <module name="base" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
