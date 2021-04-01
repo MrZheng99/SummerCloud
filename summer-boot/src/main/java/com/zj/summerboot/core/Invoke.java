@@ -51,7 +51,6 @@ public class Invoke {
     }
     public void invoke(RpcRequestEntity rpcRequestEntity) throws IOException {
         log.info("invoke----{}",rpcRequestEntity);
-
         InvokeData invokeData = (InvokeData) rpcRequestEntity.getData();
         Socket sk = SocketCenter.getByRequestID(rpcRequestEntity.getRequestID());
         String qualifiedName = invokeData.getQualifiedName();

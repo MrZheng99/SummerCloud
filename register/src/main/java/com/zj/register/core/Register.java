@@ -48,10 +48,7 @@ public class Register {
         }finally {
             oos.close();
             outputStream.close();
-            System.out.println("关闭连接前");
             sk.close();
-            System.out.println("关闭连接后");
-
         }
     }
 }

@@ -11,12 +11,13 @@
     <modules>
         <module>caller</module>
         <module>callee</module>
-        <module>rpc-util</module>
-        <module>callee-api</module>
+<!--        <module>rpc-util</module>-->
+<!--        <module>callee-api</module>-->
         <module>register</module>
         <module>register-test</module>
         <module>summer-boot</module>
         <module>base</module>
+        <module>monitor</module>
     </modules>
 
 

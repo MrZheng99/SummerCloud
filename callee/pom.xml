@@ -11,18 +11,18 @@
 
     <artifactId>callee</artifactId>
 <dependencies>
-    <dependency>
-        <groupId>com.zj</groupId>
-        <artifactId>callee-api</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <scope>compile</scope>
-    </dependency>
-    <dependency>
-        <groupId>com.zj</groupId>
-        <artifactId>rpc-util</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <scope>compile</scope>
-    </dependency>
+<!--    <dependency>-->
+<!--        <groupId>com.zj</groupId>-->
+<!--        <artifactId>callee-api</artifactId>-->
+<!--        <version>1.0-SNAPSHOT</version>-->
+<!--        <scope>compile</scope>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--        <groupId>com.zj</groupId>-->
+<!--        <artifactId>rpc-util</artifactId>-->
+<!--        <version>1.0-SNAPSHOT</version>-->
+<!--        <scope>compile</scope>-->
+<!--    </dependency>-->
     <dependency>
         <groupId>com.zj</groupId>
         <artifactId>register</artifactId>

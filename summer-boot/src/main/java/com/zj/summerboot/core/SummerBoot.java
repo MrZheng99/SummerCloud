@@ -39,7 +39,7 @@ public class SummerBoot {
         int corePoolSize = Runtime.getRuntime().availableProcessors();
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize,
                 corePoolSize * 3, 10, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(corePoolSize * 2),
+                new ArrayBlockingQueue<Runnable>(corePoolSize * 2),
                 new ThreadPoolExecutor.AbortPolicy());
         while (true) {
             Socket socket = ssk.accept();
