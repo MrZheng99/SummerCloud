@@ -1,4 +1,4 @@
-package com.zj.register.core;
+package com.zj.register.newcore;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

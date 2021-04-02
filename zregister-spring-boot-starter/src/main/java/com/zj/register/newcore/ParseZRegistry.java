@@ -1,4 +1,4 @@
-package com.zj.register.core;
+package com.zj.register.newcore;
 
 /**
  * 解析@ZRegistry注解

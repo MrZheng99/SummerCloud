@@ -1,4 +1,6 @@
-package com.zj.register.core;
+package com.zj.register.newcore;
+
+import com.zj.register.newcore.RegistryProperties;
 
 public class RegistryService {
     private RegistryProperties registryProperties;
@@ -10,7 +12,7 @@ public class RegistryService {
     @Override
     public String toString() {
         return "RegistryService{" +
-                "registry-addr=" + registryProperties. +
+                "registryProperties=" + registryProperties +
                 '}';
     }
 }
