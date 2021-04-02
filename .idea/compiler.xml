@@ -18,5 +18,8 @@
         <module name="base" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="zregister-spring-boot-starter" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
 </project>
