@@ -13,12 +13,20 @@
         <module>callee</module>
 <!--        <module>rpc-util</module>-->
 <!--        <module>callee-api</module>-->
-        <module>register</module>
+        <module>zregister-spring-boot-starter</module>
         <module>register-test</module>
         <module>summer-boot</module>
         <module>base</module>
         <module>monitor</module>
     </modules>
-
-
+    <properties>
+        <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+    </dependencies>
 </project>

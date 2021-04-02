@@ -14,7 +14,7 @@
         <module name="rpc-util" />
         <module name="register-test" />
         <module name="monitor" />
-        <module name="register" />
+        <module name="zregister-spring-boot-starter" />
         <module name="base" />
       </profile>
     </annotationProcessing>
