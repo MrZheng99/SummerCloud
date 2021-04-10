@@ -10,5 +10,5 @@
 1. 数据传输使用netty
 2. 数据序列化使用Kryo
 
-![image-20210402225416789](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20210402225416789.png)
+![架构](D:\Desktop\毕业设计\code\架构.png)
 

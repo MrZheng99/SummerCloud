@@ -1,4 +1,4 @@
-import com.zj.summerboot.core.SummerBoot;
+import com.zj.zrpc.core.ZRPC;
 
 import java.io.IOException;
 
@@ -26,6 +26,6 @@ public class CalleeApplication {
 //        }
 //    }
     public static void main(String[] args) throws IOException {
-        SummerBoot.run(CalleeApplication.class);
+        ZRPC.run(CalleeApplication.class);
     }
 }

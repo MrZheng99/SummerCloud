@@ -1,6 +1,6 @@
 package com.zj.rpc.caller;
 
-import com.zj.summerboot.util.SummerTemplate;
+import com.zj.zrpc.util.ZRpcTemplate;
 
 /**
  * @author zj
@@ -8,7 +8,7 @@ import com.zj.summerboot.util.SummerTemplate;
  */
 public class CallerImpl {
     public Object caller(int a,int b){
-        SummerTemplate summerTemplate=new SummerTemplate();
+        ZRpcTemplate summerTemplate=new ZRpcTemplate();
         Object o = summerTemplate.get(10001,"callee", "com.zj.rpc.callee.CalculateImpl", "calculate", new Object[]{a, b});
         System.out.println(o);
         return o;

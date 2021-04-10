@@ -1,4 +1,4 @@
-import com.zj.summerboot.core.SummerBoot;
+import com.zj.zrpc.core.ZRPC;
 
 import java.io.IOException;
 
@@ -8,6 +8,6 @@ import java.io.IOException;
  */
 public class RegisterTestApplication {
     public static void main(String[] args) throws IOException {
-        SummerBoot.run(RegisterTestApplication.class);
+        ZRPC.run(RegisterTestApplication.class);
     }
 }

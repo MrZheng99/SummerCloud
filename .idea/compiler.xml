@@ -8,7 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="caller" />
-        <module name="summer-boot" />
+        <module name="zrpc" />
         <module name="callee" />
         <module name="callee-api" />
         <module name="rpc-util" />

@@ -1,4 +1,4 @@
-package com.zj.summerboot.entity;
+package com.zj.base.entity;
 
 /**
  * @author zj

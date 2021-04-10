@@ -1,8 +1,10 @@
-package com.zj.summerboot.core;
+package com.zj.zrpc.core;
 
 import com.zj.base.constants.RegisterCenter;
 import com.zj.base.entity.ServiceConfigDefinition;
 import com.zj.register.core.Register;
+import com.zj.register.core.RegisterConfigDefinition;
+import com.zj.zrpc.entity.RegisterConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -18,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2020/12/30 15:04
  */
 @Slf4j
-public class SummerBoot {
+public class ZRPC {
     private static RegisterCenter registerCenter=new RegisterCenter();
     public static RegisterCenter getRegisterCenter(){
         return registerCenter;
@@ -35,7 +37,10 @@ public class SummerBoot {
         ssk.bind(new InetSocketAddress(addr, port));
         log.info("启动服务-{} 成功，占用地址：{}，端口：{}", name, addr, port);
         Register register = new Register(serviceSCD);
-        register.register(clazz,"application.properties", "zj.register");
+        RegisterConfigDefinition registerRCD = RegisterConfigDefinition.readConfig(clazz,"application.properties",
+                "zj.register");
+        register.register(registerRCD);
+        RegisterConfig.CONF=registerRCD;
         int corePoolSize = Runtime.getRuntime().availableProcessors();
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize,
                 corePoolSize * 3, 10, TimeUnit.SECONDS,
@@ -43,7 +48,7 @@ public class SummerBoot {
                 new ThreadPoolExecutor.AbortPolicy());
         while (true) {
             Socket socket = ssk.accept();
-            log.info(socket.toString());
+            log.info("开始处理：{}",socket.toString());
             threadPoolExecutor.submit(new Handle(socket));
         }
     }

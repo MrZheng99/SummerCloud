@@ -1,13 +1,6 @@
-import com.zj.base.entity.DataType;
-import com.zj.base.entity.RpcRequestEntity;
-import com.zj.base.entity.RpcResponseEntity;
-import com.zj.summerboot.entity.InvokeData;
-import com.zj.summerboot.util.SummerTemplate;
+import com.zj.zrpc.util.ZRpcTemplate;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
 
 /**
  * @author zj
@@ -15,7 +8,7 @@ import java.net.Socket;
  */
 public class Test {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
-        SummerTemplate summerTemplate=new SummerTemplate();
+        ZRpcTemplate summerTemplate=new ZRpcTemplate();
         Object o = summerTemplate.get(10002,"caller", "com.zj.rpc.callee.CallerImpl", "caller", new Object[]{1, 2});
         System.out.println( o);
     }

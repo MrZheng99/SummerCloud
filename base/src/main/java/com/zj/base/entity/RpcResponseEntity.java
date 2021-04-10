@@ -11,12 +11,12 @@ public class RpcResponseEntity implements Serializable {
     private Long requestID;
     private Object data;
 
-    public RpcResponseEntity(Object data) {
-        this.data=data;
+    public RpcResponseEntity() {
+        this.requestID=System.currentTimeMillis();
+        this.data = null;
     }
-
-    public RpcResponseEntity(Long requestID, Object data) {
-        this.requestID = requestID;
+    public RpcResponseEntity(Object data) {
+        this.requestID=System.currentTimeMillis();
         this.data = data;
     }
 

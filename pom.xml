@@ -15,7 +15,7 @@
 <!--        <module>callee-api</module>-->
         <module>register</module>
         <module>register-test</module>
-        <module>summer-boot</module>
+        <module>zrpc</module>
         <module>base</module>
         <module>monitor</module>
     </modules>

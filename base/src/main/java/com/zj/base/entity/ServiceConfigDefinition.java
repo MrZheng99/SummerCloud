@@ -36,6 +36,15 @@ public class ServiceConfigDefinition {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "ServiceConfigDefinition{" +
+                "addr='" + addr + '\'' +
+                ", port=" + port +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
     public ServiceConfigDefinition(String addr, int port, String name) {
         this.addr = addr;
         this.port = port;

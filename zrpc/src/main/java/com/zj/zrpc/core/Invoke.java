@@ -1,23 +1,17 @@
-package com.zj.summerboot.core;
+package com.zj.zrpc.core;
 
-import com.zj.base.constants.RegisterCenter;
 import com.zj.base.constants.SocketCenter;
-import com.zj.base.entity.DataType;
-import com.zj.base.entity.RpcRequestEntity;
-import com.zj.base.entity.RpcResponseEntity;
-import com.zj.base.entity.ServerInfo;
-import com.zj.register.core.Register;
-import com.zj.summerboot.entity.*;
+import com.zj.base.entity.*;
+import com.zj.base.util.SerializeUtil;
+import com.zj.zrpc.entity.RegisterConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author zj
@@ -35,19 +29,17 @@ public class Invoke {
         InvokeData invokeData = (InvokeData) rpcRequestEntity.getData();
         String serviceName = invokeData.getServiceName();
         //转发请求到具体服务器执行
-        ServerInfo serverInfo = SummerBoot.getRegisterCenter().getByName(serviceName);
+//        ServerInfo serverInfo = ZRPC.getRegisterCenter().getByName(serviceName);
+        Socket register_sk = new Socket(RegisterConfig.CONF.getAddr(),RegisterConfig.CONF.getPort());
+        SerializeUtil.send(new RpcRequestEntity(DataType.GET_SERVICE,new ServerInfo(serviceName,null,null)),
+                register_sk.getOutputStream());
+        RpcResponseEntity rpcResponseEntity = SerializeUtil.accept(RpcResponseEntity.class, register_sk.getInputStream(),true);
+        ServerInfo serverInfo = (ServerInfo) rpcResponseEntity.getData();
+        log.info("serverInfo:{}",serverInfo);
         Socket sk = new Socket(serverInfo.getAddr(),serverInfo.getPort());
-        log.warn("send--->>>>>{}",sk);
         OutputStream outputStream = sk.getOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(outputStream);
-        rpcRequestEntity.setDataType(DataType.INVOKE);
-        oos.writeObject(rpcRequestEntity);
-        log.info("send----{}",rpcRequestEntity);
-        outputStream.flush();
-        oos.flush();
-        oos.close();
-        outputStream.close();
-        sk.close();
+        //todo 序列化
+        SerializeUtil.send(rpcRequestEntity,outputStream);
     }
     public void invoke(RpcRequestEntity rpcRequestEntity) throws IOException {
         log.info("invoke----{}",rpcRequestEntity);
@@ -73,13 +65,10 @@ public class Invoke {
             //Method method = clazz.getDeclaredMethod(methodName,parameterTypes);
             Object o = clazz.newInstance();
             Object rs = method.invoke(o,params);
-            log.info(String.valueOf(rs));
             OutputStream os = sk.getOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(os);
-            oos.writeObject(new RpcResponseEntity(rs));
-            oos.flush();
-            System.out.println(sk.getLocalPort());
-            os.flush();
+            //todo 序列化
+            SerializeUtil.send(new RpcResponseEntity(rs),os);
+
         } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }

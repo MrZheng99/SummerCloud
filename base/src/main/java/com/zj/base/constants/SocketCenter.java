@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class SocketCenter {
     private static ConcurrentMap<Long, Socket> SOCKET_LIST=new ConcurrentHashMap<>();
-
     public static Socket getByRequestID(Long requestId){
         return SOCKET_LIST.getOrDefault(requestId,null);
     }
