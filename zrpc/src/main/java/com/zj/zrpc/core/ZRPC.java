@@ -24,10 +24,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class ZRPC {
-    //    private static final RegisterCenter registerCenter=new RegisterCenter();
-//    public static RegisterCenter getRegisterCenter(){
-//        return registerCenter;
-//    }
     public static void run(Class<?> clazz) throws IOException {
         ServiceConfigDefinition serviceSCD = ServiceConfigDefinition.readConfig(clazz, "application.properties", "zj");
         final String addr = serviceSCD.getAddr();
@@ -54,7 +50,6 @@ public class ZRPC {
         } else {
             while (true){
                 Socket socket = ssk.accept();
-                log.info("-------------------");
                 threadPoolExecutor.submit(new ServerHandle(socket));
             }
         }

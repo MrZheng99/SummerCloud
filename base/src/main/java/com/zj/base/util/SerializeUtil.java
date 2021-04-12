@@ -32,7 +32,6 @@ public class SerializeUtil {
         kryo.register(RpcResponseEntity.class);
         kryo.register(Class[].class);
         kryo.register(Object[].class);
-
     }
 
     /**
@@ -44,14 +43,11 @@ public class SerializeUtil {
         Output output = new Output(outputStream);
         kryo.writeObject(output, obj);
         output.flush();
-       // log.info("已经发送");
-
     }
 
     public static void send(Object obj, Socket socket, Boolean closed) throws IOException {
         OutputStream outputStream = socket.getOutputStream();
         Output output = new Output(outputStream);
-
         kryo.writeObject(output, obj);
         output.flush();
         if (closed) {
@@ -68,21 +64,78 @@ public class SerializeUtil {
     public static <T> T accept(Class<T> type, Socket socket) throws IOException {
         InputStream inputStream = socket.getInputStream();
         Input input = new Input(inputStream);
-       // log.info("开始读取数据");
-        T t = kryo.readObject(input, type);
-       // log.info("读取数据完毕");
-        return t;
+        return kryo.readObject(input, type);
     }
 
     public static <T> T accept(Class<T> type, Socket socket, Boolean closed) throws IOException {
         InputStream inputStream = socket.getInputStream();
         Input input = new Input(inputStream);
-        //log.info("开始读取数据");
         T t = kryo.readObject(input, type);
-        //log.info("读取数据完毕");
         if (closed) {
             input.close();
         }
         return t;
+    }
+
+    /**
+     * 先发送出去再获取结果
+     *
+     * @param type 返回的对象类型
+     * @param obj 发送的对象
+     * @param socket socket
+     * @return <T> t
+     * @throws IOException 获取输入输出流可能失败
+     */
+    public static <T> T sendAndAccept(Class<T> type,Object obj, Socket socket) throws IOException {
+        OutputStream outputStream = socket.getOutputStream();
+        Output output = new Output(outputStream);
+        kryo.writeObject(output, obj);
+        output.flush();
+        InputStream inputStream = socket.getInputStream();
+        Input input = new Input(inputStream);
+        return kryo.readObject(input, type);
+    }
+    public static <T> T sendAndAccept(Class<T> type,Object obj, Socket socket,Boolean closed) throws IOException {
+        OutputStream outputStream = socket.getOutputStream();
+        Output output = new Output(outputStream);
+        kryo.writeObject(output, obj);
+        output.flush();
+        InputStream inputStream = socket.getInputStream();
+        Input input = new Input(inputStream);
+        T t = kryo.readObject(input, type);
+        if (closed) {
+            input.close();
+        }
+        return t;
+    }
+
+    /**
+     * 先获取再发送
+     *
+     * @param type 发送数据的类型
+     * @param socket socket
+     * @param <T> t
+     * @throws IOException 获取输入输出流可能失败
+     */
+    public static <T> void acceptAndSend(Class<T> type, Socket socket) throws IOException {
+        InputStream inputStream = socket.getInputStream();
+        Input input = new Input(inputStream);
+        T t = kryo.readObject(input, type);
+        OutputStream outputStream = socket.getOutputStream();
+        Output output = new Output(outputStream);
+        kryo.writeObject(output, t);
+        output.flush();
+    }
+    public static <T> void acceptAndSend(Class<T> type, Socket socket,Boolean closed) throws IOException {
+        InputStream inputStream = socket.getInputStream();
+        Input input = new Input(inputStream);
+        T t = kryo.readObject(input, type);
+        OutputStream outputStream = socket.getOutputStream();
+        Output output = new Output(outputStream);
+        kryo.writeObject(output, t);
+        output.flush();
+        if(closed){
+            output.close();
+        }
     }
 }

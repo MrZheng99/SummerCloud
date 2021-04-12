@@ -25,8 +25,7 @@ public class ZRpcTemplate {
             invokeData.setMethodName(methodName);
             invokeData.setParams(params);
             RpcRequestEntity rpcRequestEntity = new RpcRequestEntity(DataType.SEND, invokeData);
-            SerializeUtil.send(rpcRequestEntity,sk);
-            RpcResponseEntity rpcResponseEntity=SerializeUtil.accept(RpcResponseEntity.class,sk,true);
+            RpcResponseEntity rpcResponseEntity=SerializeUtil.sendAndAccept(RpcResponseEntity.class,rpcRequestEntity,sk,true);
             rs =  rpcResponseEntity.getData();
         } catch (IOException e) {
             e.printStackTrace();

@@ -47,7 +47,6 @@ public class Invoke {
             Object rs = method.invoke(o,params);
             log.info("执行结果：{}",rs);
             SerializeUtil.send(new RpcResponseEntity(rs),sk);
-            log.info("回送数据成功");
         } catch (ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
