@@ -5,6 +5,5 @@ package com.zj.base.entity;
  * @date 2020/12/30 17:34
  */
 public enum DataType {
-    REGISTER,INVOKE,RETURN,SEND,DISTRIBUTE,GET_SERVICE
-    ;
+    REGISTER,INVOKE,SEND,GET_SERVICE_LIST,CHECK;
 }

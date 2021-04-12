@@ -9,8 +9,8 @@ import com.zj.zrpc.util.ZRpcTemplate;
 public class CallerImpl {
     public Object caller(int a,int b){
         ZRpcTemplate summerTemplate=new ZRpcTemplate();
-        Object o = summerTemplate.get(10001,"callee", "com.zj.rpc.callee.CalculateImpl", "calculate", new Object[]{a, b});
-        System.out.println(o);
+        Object o = summerTemplate.get("127.0.0.1",10000,"callee", "com.zj.rpc.callee.CalculateImpl", "calculate",
+          new Object[]{a, b});
         return o;
     }
 }

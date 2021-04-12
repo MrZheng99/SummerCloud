@@ -4,6 +4,7 @@ import com.zj.base.constants.RegisterCenter;
 import com.zj.base.entity.ServiceConfigDefinition;
 import com.zj.register.core.Register;
 import com.zj.register.core.RegisterConfigDefinition;
+import com.zj.register.core.RegisterHandle;
 import com.zj.zrpc.entity.RegisterConfig;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,7 +12,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Hashtable;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -21,13 +24,10 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 public class ZRPC {
-    private static RegisterCenter registerCenter=new RegisterCenter();
-    public static RegisterCenter getRegisterCenter(){
-        return registerCenter;
-    }
-    public static void setRegisterCenter(RegisterCenter rc){
-       registerCenter=rc;
-    }
+    //    private static final RegisterCenter registerCenter=new RegisterCenter();
+//    public static RegisterCenter getRegisterCenter(){
+//        return registerCenter;
+//    }
     public static void run(Class<?> clazz) throws IOException {
         ServiceConfigDefinition serviceSCD = ServiceConfigDefinition.readConfig(clazz, "application.properties", "zj");
         final String addr = serviceSCD.getAddr();
@@ -37,19 +37,26 @@ public class ZRPC {
         ssk.bind(new InetSocketAddress(addr, port));
         log.info("启动服务-{} 成功，占用地址：{}，端口：{}", name, addr, port);
         Register register = new Register(serviceSCD);
-        RegisterConfigDefinition registerRCD = RegisterConfigDefinition.readConfig(clazz,"application.properties",
+        RegisterConfigDefinition registerRCD = RegisterConfigDefinition.readConfig(clazz, "application.properties",
                 "zj.register");
         register.register(registerRCD);
-        RegisterConfig.CONF=registerRCD;
+        RegisterConfig.CONF = registerRCD;
         int corePoolSize = Runtime.getRuntime().availableProcessors();
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize,
                 corePoolSize * 3, 10, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<Runnable>(corePoolSize * 2),
                 new ThreadPoolExecutor.AbortPolicy());
-        while (true) {
-            Socket socket = ssk.accept();
-            log.info("开始处理：{}",socket.toString());
-            threadPoolExecutor.submit(new Handle(socket));
+        if (registerRCD.isIdentifyEnable()) {
+            while (true) {
+                Socket socket = ssk.accept();
+                threadPoolExecutor.submit(new RegisterHandle(socket));
+            }
+        } else {
+            while (true){
+                Socket socket = ssk.accept();
+                log.info("-------------------");
+                threadPoolExecutor.submit(new ServerHandle(socket));
+            }
         }
     }
 }

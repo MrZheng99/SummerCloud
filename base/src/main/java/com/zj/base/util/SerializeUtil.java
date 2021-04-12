@@ -4,18 +4,22 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.zj.base.entity.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 序列化工具
  */
+@Slf4j
 public class SerializeUtil {
-    private static final Kryo kryo=new Kryo();
+    private static final Kryo kryo = new Kryo();
+
     static {
         kryo.register(Integer.class);
         kryo.register(Long.class);
@@ -30,44 +34,53 @@ public class SerializeUtil {
         kryo.register(Object[].class);
 
     }
+
     /**
-     *
-     * @param obj 序列化的对象
-     * @param outputStream 输出流
+     * @param obj          序列化的对象
+     * @param socket 输出流
      */
-    public static void send(Object obj, OutputStream outputStream){
-            Output output = new Output(outputStream);
-            kryo.writeObject(output, obj);
-            output.flush();
+    public static void send(Object obj, Socket socket) throws IOException {
+        OutputStream outputStream = socket.getOutputStream();
+        Output output = new Output(outputStream);
+        kryo.writeObject(output, obj);
+        output.flush();
+       // log.info("已经发送");
+
     }
-    public static void send(Object obj, OutputStream outputStream,Boolean closed){
-            Output output = new Output(outputStream);
-            kryo.writeObject(output, obj);
-            output.flush();
-            if(closed){
-                output.close();
-            }
+
+    public static void send(Object obj, Socket socket, Boolean closed) throws IOException {
+        OutputStream outputStream = socket.getOutputStream();
+        Output output = new Output(outputStream);
+
+        kryo.writeObject(output, obj);
+        output.flush();
+        if (closed) {
+            output.close();
+        }
     }
+
     /**
-     *
-     * @param type 返回指定的类型
-     * @param inputStream 输入流
-     * @param <T> 泛型
+     * @param type   返回指定的类型
+     * @param socket socket
+     * @param <T>    泛型
      * @return 返回输入流中的结果
      */
-    public static <T> T accept(Class<T> type, InputStream inputStream){
-            Input input = new Input(inputStream);
-            System.out.println("开始读取数据");
-            T t= kryo.readObject(input,type);
-            System.out.println("读取数据完毕");
-            return t;
-    }
-    public static <T> T accept(Class<T> type, InputStream inputStream,Boolean closed){
+    public static <T> T accept(Class<T> type, Socket socket) throws IOException {
+        InputStream inputStream = socket.getInputStream();
         Input input = new Input(inputStream);
-        System.out.println("开始读取数据");
-        T t = kryo.readObject(input,type);
-        System.out.println("读取数据完毕");
-        if(closed){
+       // log.info("开始读取数据");
+        T t = kryo.readObject(input, type);
+       // log.info("读取数据完毕");
+        return t;
+    }
+
+    public static <T> T accept(Class<T> type, Socket socket, Boolean closed) throws IOException {
+        InputStream inputStream = socket.getInputStream();
+        Input input = new Input(inputStream);
+        //log.info("开始读取数据");
+        T t = kryo.readObject(input, type);
+        //log.info("读取数据完毕");
+        if (closed) {
             input.close();
         }
         return t;
