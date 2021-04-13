@@ -4,9 +4,12 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.zj.base.entity.*;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.crypto.Data;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -138,4 +141,29 @@ public class SerializeUtil {
             output.close();
         }
     }
+
+    public static void serialize(Object object, ByteBuf out) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Output output = new Output(baos);
+        kryo.writeClassAndObject(output, object);
+        output.flush();
+        output.close();
+        byte[] b = baos.toByteArray();
+        try {
+            baos.flush();
+            baos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        out.writeBytes(b);
+    }
+
+    public static  Object deserialize(ByteBuf out) {
+        if (out == null) {
+            return null;
+        }
+        Input input = new Input(new ByteBufInputStream(out));
+        return kryo.readClassAndObject(input);
+    }
+
 }
