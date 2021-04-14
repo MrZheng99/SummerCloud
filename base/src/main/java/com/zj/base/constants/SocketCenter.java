@@ -3,6 +3,8 @@ package com.zj.base.constants;
 import com.zj.base.entity.ServerInfo;
 
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -21,4 +23,8 @@ public class SocketCenter {
     public static void add(Long requestId,Socket socket){
         SOCKET_LIST.put(requestId,socket);
     }
+
+    //缓存分发请求的socket
+    public static Map<String,Socket> SEND_SOCKET_MAP=new HashMap<>();
+
 }
