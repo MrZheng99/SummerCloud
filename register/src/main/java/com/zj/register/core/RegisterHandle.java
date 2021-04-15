@@ -32,7 +32,7 @@ public class RegisterHandle implements Runnable{
                 case REGISTER:
                     ServerInfo serverInfo = (ServerInfo) rpcRequestEntity.getData();
                     RegisterCenter.add(serverInfo.getName(), serverInfo);
-                    log.info("已有服务[{}]", RegisterCenter.getServiceList());
+                    log.info("已有服务[{}]", RegisterCenter.getRuList());
                     is.close();
                     break;
                 case SEND:
@@ -44,7 +44,7 @@ public class RegisterHandle implements Runnable{
                     break;
                 case GET_SERVICE_LIST:
                     log.info("获取已注册服务列表");
-                    RpcResponseEntity rpcResponseEntity = new RpcResponseEntity(RegisterCenter.getServiceList());
+                    RpcResponseEntity rpcResponseEntity = new RpcResponseEntity(RegisterCenter.getRuList());
                     SerializeUtil.send(rpcResponseEntity, socket);
                     break;
                 default:

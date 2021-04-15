@@ -11,6 +11,7 @@
     <modules>
         <module>caller</module>
         <module>callee</module>
+        <module>callertest</module>
 <!--        <module>rpc-util</module>-->
 <!--        <module>callee-api</module>-->
         <module>register</module>

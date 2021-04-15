@@ -10,6 +10,7 @@
         <module name="caller" />
         <module name="zrpc" />
         <module name="callee" />
+        <module name="callertest" />
         <module name="callee-api" />
         <module name="rpc-util" />
         <module name="register-test" />

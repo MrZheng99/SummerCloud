@@ -1,4 +1,5 @@
-package com.zj.zrpc.entity;
+package com.zj.register.conf;
+
 
 import com.zj.register.core.RegisterConfigDefinition;
 

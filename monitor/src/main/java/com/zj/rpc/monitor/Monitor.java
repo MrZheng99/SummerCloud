@@ -8,13 +8,12 @@ import com.zj.base.entity.RpcRequestEntity;
 import com.zj.base.entity.RpcResponseEntity;
 import com.zj.base.entity.ServerInfo;
 import com.zj.base.util.SerializeUtil;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -22,12 +21,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 public class Monitor {
-    private final Timer timer = new Timer();
     private final Lock lock = new ReentrantLock();
     private final Condition run = lock.newCondition();
     private final Condition stop = lock.newCondition();
-    private final Map<String, Socket> socketList = new HashMap<>(1 << 3);
+    private final Map<String, List<Socket>> socketList = new HashMap<>(1 << 3);
 
+    /**
+     * 如果没有服务在线，那么就暂停检测，等到有服务时再继续检测
+     */
     public void start() {
         log.info("定时检测开启");
         Thread threadStop = new Thread(new StopThread());
@@ -84,77 +85,111 @@ public class Monitor {
 
     private void timeTaskRun() throws InterruptedException {
         while (true) {
-            Set<String> serviceSet = RegisterCenter.getServiceList().keySet();
+            Set<String> serviceSet = RegisterCenter.getRuList().keySet();
             Set<String> socketSet = socketList.keySet();
             log.info("socketSet【{}】,RegisterCenterServiceList::【{}】", socketSet,
-                    RegisterCenter.getServiceList());
+                    RegisterCenter.getRuList());
             if (socketSet.size() > serviceSet.size()) {
+                ArrayList<Object> objects = new ArrayList<>();
                 socketSet.forEach((key -> {
                     if (!serviceSet.contains(key)) {
-                        if (!socketList.get(key).isClosed()) {
+                        socketList.get(key).forEach((socket -> {
+                            if (!socket.isClosed()) {
+                                try {
+                                    socket.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }));
+                        objects.add(key);
+                    }
+                }));
+                socketList.remove(objects);
+            } else {
+                serviceSet.forEach((key -> {
+                    ConcurrentLinkedDeque<ServerInfo> serverInfos =
+                            RegisterCenter.getServiceList().getOrDefault(key, null);
+                    if (Objects.isNull(serverInfos))
+                        return;
+                    if (!socketSet.contains(key) || serverInfos.size() > 0) {
+                        List<Socket> sockets = socketList.getOrDefault(key, new ArrayList<>());
+                        for (ServerInfo serverInfo : serverInfos) {
                             try {
-                                socketList.get(key).close();
+                                Socket socket = new Socket(serverInfo.getAddr(), serverInfo.getPort());
+                                socket.setKeepAlive(true);
+                                sockets.add(socket);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
-                        socketList.remove(key);
+                        socketList.put(key, sockets);
                     }
-                }));
-            } else if (socketSet.size() < serviceSet.size()) {
-                serviceSet.forEach((key -> {
-                    if (!socketSet.contains(key)) {
-                        ServerInfo serverInfo = RegisterCenter.getServiceList().get(key);
-                        try {
-                            Socket socket = new Socket(serverInfo.getAddr(), serverInfo.getPort());
-                            socket.setKeepAlive(true);
-                            socketList.put(key, socket);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    RegisterCenter.getServiceList().remove(key);
                 }));
             }
-            if (serviceSet.size() > 0)
+            if (socketList.size() > 0)
                 check(socketList);
             else {
                 log.info("暂无服务注册");
                 return;
             }
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(6);
         }
     }
 
     //发请求检测服务是否存活
-    public void check(Map<String, Socket> socketList) {
-        List<String> errorList = new ArrayList<>();
-        socketList.forEach((serviceName, socket) -> {
-            try {
-                RpcRequestEntity rpcRequestEntity = new RpcRequestEntity(DataType.CHECK, null);
-                log.info("socket【{}】,状态关闭【{}】,已连接【{}】", socket, socket.isClosed(), socket.isConnected());
-                RpcResponseEntity rpcResponseEntity = SerializeUtil.sendAndAccept(RpcResponseEntity.class, rpcRequestEntity, socket);
-                if (socket.isClosed() || !"SUCCESS".equals(String.valueOf(rpcResponseEntity.getData()))) {
-                    log.error("未收到服务【{}】的回复", serviceName);
-                    errorList.add(serviceName);
-                } else {
-                    log.info("服务【{}】正常", serviceName);
+    public void check(Map<String, List<Socket>> socketList) {
+        Map<String, List<Socket>> errorList = new HashMap<>();
+        //log.info("socketList:{}", socketList);
+        socketList.forEach((serviceName, sockets) -> {
+            sockets.forEach(socket -> {
+                try {
+                    RpcRequestEntity rpcRequestEntity = new RpcRequestEntity(DataType.CHECK, null);
+                    RpcResponseEntity rpcResponseEntity = SerializeUtil.sendAndAccept(RpcResponseEntity.class, rpcRequestEntity, socket);
+//                    log.info("服务【{}】正常,socket【{}】,状态关闭【{}】,已连接【{}】", serviceName, socket, socket.isClosed(),
+//                            socket.isConnected());
+                    if (socket.isClosed() || !"SUCCESS".equals(String.valueOf(rpcResponseEntity.getData()))) {
+                        log.error("未收到服务【{}】的回复,socket【{}】", serviceName, socket);
+                        add(errorList, serviceName, socket);
+                    }
+                } catch (Exception e) {
+                    if (e instanceof KryoException) {
+                        add(errorList, serviceName, socket);
+                    } else {
+                        e.printStackTrace();
+                    }
                 }
-            } catch (Exception e) {
-                if (e instanceof KryoException) {
-                    errorList.add(serviceName);
-                    log.error("服务【{}】已关闭", serviceName);
-                } else {
-                    e.printStackTrace();
-                }
-            }
+            });
         });
-        errorList.forEach((key -> {
-            log.info("删除socket【{}】", key);
-            RegisterCenter.removeByName(key);
-            SocketCenter.SEND_SOCKET_MAP.remove(key);
-            socketList.remove(key);
-        }));
+        errorList.forEach((serviceName, list) -> {
+            list.forEach(socket -> {
+                log.info("删除serviceName【{}】，socket【{}】", serviceName, socket);
+            });
+            remove(SocketCenter.SEND_SOCKET_MAP, serviceName, list);
+            RegisterCenter.remove(serviceName, list);
+            remove(socketList, serviceName, list);
+        });
 
+    }
+
+    public void remove(Map<String, List<Socket>> map, String key, List<Socket> vals) {
+        List<Socket> o = map.get(key);
+        if (Objects.isNull(o))
+            return;
+        if (o.size() == 1)
+            map.remove(key);
+        else {
+            o.removeAll(vals);
+            map.put(key, o);
+        }
+
+    }
+
+    public void add(Map<String, List<Socket>> map, String key, Socket socket) {
+        List<Socket> orDefault = map.getOrDefault(key, new ArrayList<>());
+        orDefault.add(socket);
+        map.put(key, orDefault);
     }
 
     public static void main(String[] args) {

@@ -5,13 +5,12 @@ import com.zj.base.constants.RegisterCenter;
 import com.zj.base.constants.SocketCenter;
 import com.zj.base.entity.*;
 import com.zj.base.util.SerializeUtil;
+import com.zj.register.conf.RegisterConfig;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 
@@ -23,14 +22,14 @@ public class Send {
     public void send(RpcRequestEntity rpcRequestEntity) throws IOException {
         InvokeData invokeData = (InvokeData) rpcRequestEntity.getData();
         String serviceName = invokeData.getServiceName();
-        ServerInfo serverInfo= RegisterCenter.getByName(serviceName);
-        log.info("serverInfo:{}",serverInfo);
-        Socket sk=SocketCenter.SEND_SOCKET_MAP.getOrDefault(serviceName,null);
+        ServerInfo serverInfo= RegisterCenter.getByName(RegisterConfig.CONF.getLoadBalanceType(),serviceName);
+        Socket sk = SocketCenter.get(serverInfo);
         if(Objects.isNull(sk)){
-            log.info("创建新的socket分发请求");
             sk = new Socket(serverInfo.getAddr(),serverInfo.getPort());
-            SocketCenter.SEND_SOCKET_MAP.put(serviceName,sk);
+            log.info("创建新的socket分发请求,【{}】",sk);
+            SocketCenter.add(serviceName,sk);
         }
+        log.info("负责转发的socket,【{}】",sk);
         rpcRequestEntity.setDataType(DataType.INVOKE);
         SerializeUtil.send(rpcRequestEntity,sk);
         //回送数据

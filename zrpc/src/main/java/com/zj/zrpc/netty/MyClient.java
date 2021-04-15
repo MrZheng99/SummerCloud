@@ -1,4 +1,4 @@
-package com.zj.zrpc.core;
+package com.zj.zrpc.netty;
 
 import com.zj.base.util.KryoDecoder;
 import com.zj.base.util.KryoEncoder;
