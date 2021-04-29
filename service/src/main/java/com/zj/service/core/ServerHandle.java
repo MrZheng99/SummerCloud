@@ -1,4 +1,4 @@
-package com.zj.zrpc.core;
+package com.zj.service.core;
 
 import com.zj.base.constants.SocketCenter;
 import com.zj.base.entity.RpcRequestEntity;

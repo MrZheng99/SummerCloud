@@ -1,4 +1,4 @@
-package com.zj.zrpc.core;
+package com.zj.service.core;
 
 import com.zj.base.constants.SocketCenter;
 import com.zj.base.entity.*;
@@ -18,8 +18,7 @@ import java.net.Socket;
 public class Invoke {
     public void invoke(InvokeData invokeData){
     }
-    public void back(ReturnData returnData) {
-    }
+
     public void invoke(RpcRequestEntity rpcRequestEntity) throws IOException {
         log.info("INVOKE--->rpcRequestEntity: "+rpcRequestEntity.toString());
         InvokeData invokeData = (InvokeData) rpcRequestEntity.getData();

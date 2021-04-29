@@ -1,4 +1,4 @@
-import com.zj.zrpc.util.ZRpcTemplate;
+import com.zj.service.util.ZRpcTemplate;
 
 import java.io.*;
 

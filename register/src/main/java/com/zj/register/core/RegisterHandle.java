@@ -5,7 +5,9 @@ import com.zj.base.constants.SocketCenter;
 import com.zj.base.entity.RpcRequestEntity;
 import com.zj.base.entity.RpcResponseEntity;
 import com.zj.base.entity.ServerInfo;
+import com.zj.base.exception.RegisterPasswordCheckFail;
 import com.zj.base.util.SerializeUtil;
+import com.zj.register.conf.RegisterConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -31,6 +33,11 @@ public class RegisterHandle implements Runnable{
             switch (rpcRequestEntity.getDataType()) {
                 case REGISTER:
                     ServerInfo serverInfo = (ServerInfo) rpcRequestEntity.getData();
+                    if(RegisterConfig.CONF.isSecurityEnable()){
+                        if(!RegisterConfig.CONF.getName().equals(serverInfo.getUser())||!RegisterConfig.CONF.getPassword().equals(serverInfo.getPassword())){
+                            throw new RegisterPasswordCheckFail("账户:"+serverInfo.getUser()+"或 密码:"+serverInfo.getPassword()+"不正确");
+                        }
+                    }
                     RegisterCenter.add(serverInfo.getName(), serverInfo);
                     log.info("已有服务[{}]", RegisterCenter.getRuList());
                     is.close();

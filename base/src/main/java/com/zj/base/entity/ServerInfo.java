@@ -1,11 +1,8 @@
 package com.zj.base.entity;
 
-import jdk.nashorn.internal.objects.annotations.Constructor;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.net.Socket;
-import java.util.Objects;
 
 /**
  * @author zj
@@ -15,31 +12,16 @@ import java.util.Objects;
 @Data
 public class ServerInfo implements Serializable {
     private static final long serialVersionUID = -5809782578272943999L;
-    String name;//服务名称
-    String addr;//地址，ip，或者域名
-    Integer port;//端口
-    public ServerInfo() {
-    }
+    private String name;//服务名称
+    private String addr;//地址，ip，或者域名
+    private Integer port;//端口
+    private  String user;//安全校验用户名
+    private  String password;//安全校验密码
 
-    public ServerInfo(String name, String addr, Integer port) {
-        this.name = name;
-        this.addr = addr;
-        this.port = port;
-    }
+    public ServerInfo(String name, String addr, int port) {
+        this.name=name;
+        this.addr=addr;
+        this.port=port;
 
-
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, addr, port);
-    }
-
-    @Override
-    public String toString() {
-        return "ServerInfo{" +
-                "name='" + name + '\'' +
-                ", addr='" + addr + '\'' +
-                ", port=" + port +
-                '}';
     }
 }

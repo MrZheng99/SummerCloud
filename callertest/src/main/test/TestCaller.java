@@ -1,4 +1,4 @@
-import com.zj.zrpc.util.ZRpcTemplate;
+import com.zj.service.util.ZRpcTemplate;
 
 public class TestCaller {
     public static void main(String[] args) {

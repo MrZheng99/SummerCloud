@@ -1,4 +1,4 @@
-package com.zj.zrpc.util;
+package com.zj.service.util;
 
 import com.zj.base.entity.*;
 import com.zj.base.util.SerializeUtil;

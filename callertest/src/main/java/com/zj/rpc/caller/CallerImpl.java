@@ -1,6 +1,6 @@
 package com.zj.rpc.caller;
 
-import com.zj.zrpc.util.ZRpcTemplate;
+import com.zj.service.util.ZRpcTemplate;
 
 /**
  * @author zj

@@ -1,12 +1,10 @@
 package com.zj.register.core;
 
-import com.zj.base.constants.CHCCenter;
 import com.zj.base.constants.RegisterCenter;
 import com.zj.base.constants.SocketCenter;
 import com.zj.base.entity.*;
 import com.zj.base.util.SerializeUtil;
 import com.zj.register.conf.RegisterConfig;
-import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -36,11 +34,5 @@ public class Send {
         Socket socket = SocketCenter.getByRequestID(rpcRequestEntity.getRequestID());
         SerializeUtil.send(SerializeUtil.accept(RpcResponseEntity.class,sk),socket);
     }
-    public void send0(RpcRequestEntity rpcRequestEntity) throws IOException {
-        InvokeData invokeData = (InvokeData) rpcRequestEntity.getData();
 
-        //回送数据
-        ChannelHandlerContext ctx = CHCCenter.getByRequestID(rpcRequestEntity.getRequestID());
-
-    }
 }

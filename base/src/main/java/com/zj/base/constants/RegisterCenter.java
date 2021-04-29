@@ -85,7 +85,16 @@ public class RegisterCenter implements Serializable {
                 RU_LIST.put(name,orDefault);
              }
         }
-
+        ConcurrentLinkedDeque<ServerInfo> serviceListOrDefault = SERVICE_LIST.getOrDefault(name, null);
+        if(!Objects.isNull(serviceListOrDefault)){
+            int size = serviceListOrDefault.size();
+            if (size == 1)
+                SERVICE_LIST.remove(name);
+            else{
+                serviceListOrDefault.removeAll(serverInfos);
+                SERVICE_LIST.put(name,serviceListOrDefault);
+            }
+        }
     }
     public static ServerInfo getRU(String name) {
         ConcurrentLinkedDeque<ServerInfo> serviceList = RU_LIST.getOrDefault(name, null);
@@ -107,12 +116,22 @@ public class RegisterCenter implements Serializable {
             Random random = new Random();
             int i = random.nextInt(size);
             first = list.get(i);
+            serviceList.remove(first);
+            serviceList.addLast(first);
+
         }
         return first;
     }
 
     public static ServerInfo getPoll(String name) {
-        return getRU(name);
+        ConcurrentLinkedDeque<ServerInfo> serviceList = SERVICE_LIST.getOrDefault(name, null);
+        ServerInfo first = null;
+        if (serviceList != null) {
+            first = serviceList.getFirst();
+            serviceList.removeFirst();
+            serviceList.addLast(first);
+        }
+        return first;
     }
 }
 

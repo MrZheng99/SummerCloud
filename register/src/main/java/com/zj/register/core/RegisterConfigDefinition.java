@@ -17,6 +17,9 @@ public class RegisterConfigDefinition {
     private int port;//监听端口
     private String name;//配置名称
     private LoadBalanceType loadBalanceType;//负载均衡类型
+    private boolean securityEnable;//是否注册自己
+    private String user;//用户名
+    private String password;//密码
     private boolean identifyEnable;//是否注册自己
 
     public static RegisterConfigDefinition readConfig(Class<?> clazz, String confPath, String prefix) throws IOException {
@@ -39,6 +42,12 @@ public class RegisterConfigDefinition {
         }
         rcd.setLoadBalanceType(loadBalanceType);
         rcd.setIdentifyEnable(identifyEnable);
+        boolean security = "true".equalsIgnoreCase(properties.getProperty(prefix + ".loadBalance"));
+        rcd.setSecurityEnable(security);
+        if(security){
+            rcd.setUser(properties.getProperty(prefix + ".user"));
+            rcd.setPassword(properties.getProperty(prefix + ".password"));
+        }
         if (identifyEnable) {
             return rcd;
         }
