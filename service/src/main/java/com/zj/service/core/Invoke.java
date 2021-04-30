@@ -20,7 +20,15 @@ public class Invoke {
     }
 
     public void invoke(RpcRequestEntity rpcRequestEntity) throws IOException {
-        log.info("INVOKE--->rpcRequestEntity: "+rpcRequestEntity.toString());
+        InvokeData data= (InvokeData) rpcRequestEntity.getData();
+        log.info("---远程调用携带的数据展示开始---");
+        log.info("serviceName:{}",data.getServiceName());
+        log.info("qualifiedName:{}",data.getQualifiedName());
+        log.info("methodName:{}",data.getMethodName());
+        log.info("parameterTypes:{}",data.getParameterTypes());
+        log.info("params:{}",data.getParams());
+        log.info("---远程调用携带的数据展示结束---");
+
         InvokeData invokeData = (InvokeData) rpcRequestEntity.getData();
         //每个服务都有自己的SocketCenter
         Socket sk = SocketCenter.getByRequestID(rpcRequestEntity.getRequestID());

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.stream.Collectors;
 
 /**
  * 负责注册中心的各个功能分发
@@ -39,7 +40,14 @@ public class RegisterHandle implements Runnable{
                         }
                     }
                     RegisterCenter.add(serverInfo.getName(), serverInfo);
-                    log.info("已有服务[{}]", RegisterCenter.getRuList());
+                    log.info("服务在线列表");
+                    RegisterCenter.getRuList().forEach((k,v)->{
+                        log.info("服务名称【{}】",k);
+                           v.forEach(e->{
+                               log.info("addr="+e.getAddr()+",port="+e.getPort()+"\t");
+                           });
+
+                    });
                     is.close();
                     break;
                 case SEND:

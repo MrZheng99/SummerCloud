@@ -1,5 +1,6 @@
 package com.zj.base.entity;
 
+
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,7 +18,12 @@ public class ServerInfo implements Serializable {
     private Integer port;//端口
     private  String user;//安全校验用户名
     private  String password;//安全校验密码
-
+    public ServerInfo() {
+    }
+    public ServerInfo(String addr, int port) {
+        this.addr=addr;
+        this.port=port;
+    }
     public ServerInfo(String name, String addr, int port) {
         this.name=name;
         this.addr=addr;

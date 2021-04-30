@@ -19,7 +19,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Slf4j
+@Slf4j()
 public class Monitor {
     private final Lock lock = new ReentrantLock();
     private final Condition run = lock.newCondition();
@@ -46,7 +46,7 @@ public class Monitor {
                     lock.lock();
                     log.warn("开始检测阻塞");
                     while (RegisterCenter.getServiceList().size() <= 0) {
-                        System.out.println("等待服务中...5s");
+                        log.info("等待服务中...5s");
                         TimeUnit.SECONDS.sleep(5);
                     }
                     run.signal();
@@ -87,8 +87,8 @@ public class Monitor {
         while (true) {
             Set<String> serviceSet = RegisterCenter.getRuList().keySet();
             Set<String> socketSet = socketList.keySet();
-            log.info("socketSet【{}】,RegisterCenterServiceList::【{}】", socketSet,
-                    RegisterCenter.getRuList());
+//            log.info("socketSet【{}】,RegisterCenterServiceList::【{}】", socketSet,
+//                    RegisterCenter.getRuList());
             if (socketSet.size() > serviceSet.size()) {
                 ArrayList<Object> objects = new ArrayList<>();
                 socketSet.forEach((key -> {
@@ -141,14 +141,15 @@ public class Monitor {
     //发请求检测服务是否存活
     public void check(Map<String, List<Socket>> socketList) {
         Map<String, List<Socket>> errorList = new HashMap<>();
-        //log.info("socketList:{}", socketList);
+        log.info("新一轮服务检测开始");
         socketList.forEach((serviceName, sockets) -> {
             sockets.forEach(socket -> {
                 try {
                     RpcRequestEntity rpcRequestEntity = new RpcRequestEntity(DataType.CHECK, null);
                     RpcResponseEntity rpcResponseEntity = SerializeUtil.sendAndAccept(RpcResponseEntity.class, rpcRequestEntity, socket);
-//                    log.info("服务【{}】正常,socket【{}】,状态关闭【{}】,已连接【{}】", serviceName, socket, socket.isClosed(),
-//                            socket.isConnected());
+                    log.info("服务【{}】正常,Socket[addr={},port={}}],已连接【{}】", serviceName,
+                            socket.getInetAddress().getHostAddress(),socket.getPort(),
+                            socket.isConnected());
                     if (socket.isClosed() || !"SUCCESS".equals(String.valueOf(rpcResponseEntity.getData()))) {
                         log.error("未收到服务【{}】的回复,socket【{}】", serviceName, socket);
                         add(errorList, serviceName, socket);

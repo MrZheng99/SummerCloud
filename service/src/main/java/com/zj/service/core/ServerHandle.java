@@ -30,7 +30,7 @@ public class ServerHandle implements Runnable {
                 RpcRequestEntity rpcRequestEntity = SerializeUtil.accept(RpcRequestEntity.class, socket);
                 switch (rpcRequestEntity.getDataType()) {
                     case CHECK:
-                        log.info("服务状态检测");
+                        log.info("收到服务状态检测");
                         SerializeUtil.send(new RpcResponseEntity("SUCCESS"), socket);
                         break;
                     case INVOKE:

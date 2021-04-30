@@ -16,7 +16,7 @@
 <!--        <module>callee-api</module>-->
         <module>register</module>
         <module>register-test</module>
-        <module>zrpc</module>
+        <module>service</module>
         <module>base</module>
         <module>monitor</module>
     </modules>

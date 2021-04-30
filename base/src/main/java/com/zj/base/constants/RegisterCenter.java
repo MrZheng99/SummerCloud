@@ -24,14 +24,17 @@ public class RegisterCenter implements Serializable {
      * 3.最近未使用
      */
     private static final long serialVersionUID = -1361117368916951498L;
-    private static final Map<String, ConcurrentLinkedDeque<ServerInfo>> SERVICE_LIST = new  ConcurrentHashMap<>();
+    private static final Map<String, ConcurrentLinkedDeque<ServerInfo>> SERVICE_LIST = new ConcurrentHashMap<>();
     private static final Map<String, ConcurrentLinkedDeque<ServerInfo>> RU_LIST = new ConcurrentHashMap<String, ConcurrentLinkedDeque<ServerInfo>>();
-    public static  Map<String, ConcurrentLinkedDeque<ServerInfo>> getRuList() {
+
+    public static Map<String, ConcurrentLinkedDeque<ServerInfo>> getRuList() {
         return RU_LIST;
     }
-    public static  Map<String, ConcurrentLinkedDeque<ServerInfo>> getServiceList() {
+
+    public static Map<String, ConcurrentLinkedDeque<ServerInfo>> getServiceList() {
         return SERVICE_LIST;
     }
+
     public static ServerInfo getByName(LoadBalanceType type, String name) {
         switch (type) {
             case RU:
@@ -57,45 +60,36 @@ public class RegisterCenter implements Serializable {
             o = new ConcurrentLinkedDeque<>();
         }
         o.addLast(serverInfo);
-        SERVICE_LIST.put(name, o);    }
+        SERVICE_LIST.put(name, o);
+    }
 
-    public static void removeByName( ServerInfo serverInfo) {
-        String name = serverInfo.getName();
+    public static void remove(String name, List<Socket> sockets) {
+        List<ServerInfo> serverInfos = new ArrayList<>();
+        sockets.forEach(socket -> {
+            serverInfos.add(new ServerInfo(name, socket.getInetAddress().getHostAddress(), socket.getPort()));
+        });
         ConcurrentLinkedDeque<ServerInfo> orDefault = RU_LIST.getOrDefault(name, null);
         if (!Objects.isNull(orDefault)) {
             int size = orDefault.size();
             if (size == 1)
                 RU_LIST.remove(name);
-            else
-                orDefault.remove(serverInfo);
-        }
-    }
-    public static void remove(String name,List<Socket> sockets) {
-        List<ServerInfo> serverInfos = new ArrayList<>();
-        sockets.forEach(socket -> {
-            serverInfos.add(new ServerInfo(name,socket.getInetAddress().getHostAddress(),socket.getPort()));
-        });
-        ConcurrentLinkedDeque<ServerInfo> orDefault = RU_LIST.getOrDefault(name, null);
-        if(!Objects.isNull(orDefault)){
-            int size = orDefault.size();
-            if (size == 1)
-                RU_LIST.remove(name);
-            else{
+            else {
                 orDefault.removeAll(serverInfos);
-                RU_LIST.put(name,orDefault);
-             }
+                RU_LIST.put(name, orDefault);
+            }
         }
         ConcurrentLinkedDeque<ServerInfo> serviceListOrDefault = SERVICE_LIST.getOrDefault(name, null);
-        if(!Objects.isNull(serviceListOrDefault)){
+        if (!Objects.isNull(serviceListOrDefault)) {
             int size = serviceListOrDefault.size();
             if (size == 1)
                 SERVICE_LIST.remove(name);
-            else{
+            else {
                 serviceListOrDefault.removeAll(serverInfos);
-                SERVICE_LIST.put(name,serviceListOrDefault);
+                SERVICE_LIST.put(name, serviceListOrDefault);
             }
         }
     }
+
     public static ServerInfo getRU(String name) {
         ConcurrentLinkedDeque<ServerInfo> serviceList = RU_LIST.getOrDefault(name, null);
         ServerInfo first = null;
