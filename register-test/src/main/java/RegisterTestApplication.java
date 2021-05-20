@@ -1,3 +1,4 @@
+import com.zj.base.exception.RegisterPasswordCheckFail;
 import com.zj.service.core.ZRPC;
 
 import java.io.IOException;
@@ -8,6 +9,10 @@ import java.io.IOException;
  */
 public class RegisterTestApplication {
     public static void main(String[] args) throws IOException {
-        ZRPC.run(RegisterTestApplication.class);
+        try {
+            ZRPC.run(RegisterTestApplication.class);
+        } catch (RegisterPasswordCheckFail registerPasswordCheckFail) {
+            registerPasswordCheckFail.printStackTrace();
+        }
     }
 }

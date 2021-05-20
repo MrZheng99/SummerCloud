@@ -3,11 +3,11 @@ import com.zj.service.core.ZRPC;
 
 import java.io.IOException;
 
-public class CalleeApplication {
+public class CallerApplicationB {
     public static void main(String[] args) throws IOException {
         try {
-            ZRPC.run(CalleeApplication.class);
-        } catch (RegisterPasswordCheckFail registerPasswordCheckFail) {
+            ZRPC.run(CallerApplicationB.class);
+        } catch (RegisterPasswordCheckFail | IOException registerPasswordCheckFail) {
             registerPasswordCheckFail.printStackTrace();
         }
     }

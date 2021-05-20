@@ -5,6 +5,7 @@ import com.zj.base.constants.SocketCenter;
 import com.zj.base.entity.RpcRequestEntity;
 import com.zj.base.entity.RpcResponseEntity;
 import com.zj.base.entity.ServerInfo;
+import com.zj.base.entity.ServiceConfigDefinition;
 import com.zj.base.exception.RegisterPasswordCheckFail;
 import com.zj.base.util.SerializeUtil;
 import com.zj.register.conf.RegisterConfig;
@@ -34,11 +35,6 @@ public class RegisterHandle implements Runnable{
             switch (rpcRequestEntity.getDataType()) {
                 case REGISTER:
                     ServerInfo serverInfo = (ServerInfo) rpcRequestEntity.getData();
-                    if(RegisterConfig.CONF.isSecurityEnable()){
-                        if(!RegisterConfig.CONF.getName().equals(serverInfo.getUser())||!RegisterConfig.CONF.getPassword().equals(serverInfo.getPassword())){
-                            throw new RegisterPasswordCheckFail("账户:"+serverInfo.getUser()+"或 密码:"+serverInfo.getPassword()+"不正确");
-                        }
-                    }
                     RegisterCenter.add(serverInfo.getName(), serverInfo);
                     log.info("服务在线列表");
                     RegisterCenter.getRuList().forEach((k,v)->{
@@ -57,6 +53,17 @@ public class RegisterHandle implements Runnable{
                     invokeSend.send(rpcRequestEntity);
                     log.info("转发远程调用到具体服务器结束");
                     break;
+                case CHECK_PASSWORD:
+                    ServiceConfigDefinition si = (ServiceConfigDefinition) rpcRequestEntity.getData();
+                    RpcResponseEntity   rr = new RpcResponseEntity(true);
+                    if(RegisterConfig.CONF.isIdentifyEnable()){
+                        if(!RegisterConfig.CONF.getUser().equals(si.getUser())||!RegisterConfig.CONF.getPassword().equals(si.getPassword())){
+                            log.error("服务【{}】尝试连接到注册中心失败",si.getName());
+                            rr = new RpcResponseEntity(false);
+                        }
+                    }
+                    SerializeUtil.send(rr, socket);
+                    break;
                 case GET_SERVICE_LIST:
                     log.info("获取已注册服务列表");
                     RpcResponseEntity rpcResponseEntity = new RpcResponseEntity(RegisterCenter.getRuList());
@@ -64,7 +71,7 @@ public class RegisterHandle implements Runnable{
                     break;
                 default:
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

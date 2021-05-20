@@ -8,9 +8,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="caller" />
+        <module name="callerB" />
         <module name="service" />
         <module name="callee" />
-        <module name="callertest" />
         <module name="callee-api" />
         <module name="rpc-util" />
         <module name="register-test" />
@@ -20,7 +20,13 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="callertest" target="1.5" />
       <module name="zregister-spring-boot-starter" target="1.5" />
     </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="callerB" options="" />
+    </option>
   </component>
 </project>

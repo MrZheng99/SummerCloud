@@ -22,11 +22,14 @@ public class SerializeUtil {
 
     static {
         kryo.register(Integer.class);
+        kryo.register(Boolean.class);
+
         kryo.register(Long.class);
         kryo.register(DataType.class);
         kryo.register(InvokeData.class);
         kryo.register(ServerInfo.class);
         kryo.register(AtomicLong.class);
+        kryo.register(ServiceConfigDefinition.class);
         kryo.register(RpcRequestEntity.class);
         kryo.register(RpcResponseEntity.class);
         kryo.register(Class[].class);

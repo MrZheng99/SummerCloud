@@ -27,6 +27,21 @@ public class RegisterConfigDefinition {
         properties.load(clazz.getResourceAsStream(confPath));
         RegisterConfigDefinition rcd = new RegisterConfigDefinition();
         boolean identifyEnable = "true".equals(properties.getProperty(prefix + ".identifyEnable"));
+        boolean security = "true".equalsIgnoreCase(properties.getProperty(prefix + ".securityEnable"));
+        rcd.setSecurityEnable(security);
+        rcd.setIdentifyEnable(identifyEnable);
+        rcd.setUser(properties.getProperty(prefix + ".user"));
+        rcd.setPassword(properties.getProperty(prefix + ".password"));
+
+        if(!identifyEnable){
+            int port = Integer.parseInt(properties.getProperty(prefix + ".port"));
+            String addr = properties.getProperty(prefix + ".addr");
+            String name = properties.getProperty("zj.name");
+            rcd.setAddr(addr);
+            rcd.setName(name);
+            rcd.setPort(port);
+            return rcd;
+        }
         String property = properties.getProperty(prefix + ".loadBalance");
         LoadBalanceType loadBalanceType = null;
         if (property == null || "".equals(property)) {
@@ -41,22 +56,7 @@ public class RegisterConfigDefinition {
             throw new NotFoundLoadBalanceType("暂不支持负载均衡类型：" + property);
         }
         rcd.setLoadBalanceType(loadBalanceType);
-        rcd.setIdentifyEnable(identifyEnable);
-        boolean security = "true".equalsIgnoreCase(properties.getProperty(prefix + ".loadBalance"));
-        rcd.setSecurityEnable(security);
-        if(security){
-            rcd.setUser(properties.getProperty(prefix + ".user"));
-            rcd.setPassword(properties.getProperty(prefix + ".password"));
-        }
-        if (identifyEnable) {
-            return rcd;
-        }
-        int port = Integer.parseInt(properties.getProperty(prefix + ".port"));
-        String addr = properties.getProperty(prefix + ".addr");
-        String name = properties.getProperty("zj.name");
-        rcd.setAddr(addr);
-        rcd.setName(name);
-        rcd.setPort(port);
+
         return rcd;
     }
 

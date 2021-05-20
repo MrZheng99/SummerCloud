@@ -6,24 +6,26 @@ import com.zj.base.entity.RpcRequestEntity;
 import com.zj.base.entity.ServerInfo;
 import com.zj.base.entity.ServiceConfigDefinition;
 import com.zj.base.util.SerializeUtil;
+import com.zj.register.conf.RegisterConfig;
 import com.zj.rpc.monitor.Monitor;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Objects;
 
 /**
  * @author zj
  * @date 2020/12/30 14:14
  */
 public class Register {
-    private final ServiceConfigDefinition serviceRCD;
 
-    public  Register(ServiceConfigDefinition serviceRCD ){
-        this.serviceRCD=serviceRCD;
-    }
-    public void register(RegisterConfigDefinition registerRCD) throws IOException {
+
+    public static void register(RegisterConfigDefinition registerRCD,ServiceConfigDefinition serviceRCD) throws IOException {
         final boolean identifyEnable = registerRCD.isIdentifyEnable();
         if(identifyEnable) {
+            if(Objects.isNull(RegisterConfig.CONF)){
+                RegisterConfig.CONF = registerRCD;
+            }
             Monitor monitor=new Monitor();
             monitor.start();
             return;
