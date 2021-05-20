@@ -9,14 +9,12 @@ import com.zj.base.util.SerializeUtil;
 import com.zj.register.core.Register;
 import com.zj.register.core.RegisterConfigDefinition;
 import com.zj.register.core.RegisterHandle;
-import com.zj.register.conf.RegisterConfig;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
