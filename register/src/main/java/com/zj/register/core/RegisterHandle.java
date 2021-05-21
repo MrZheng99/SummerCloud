@@ -56,7 +56,7 @@ public class RegisterHandle implements Runnable{
                 case CHECK_PASSWORD:
                     ServiceConfigDefinition si = (ServiceConfigDefinition) rpcRequestEntity.getData();
                     RpcResponseEntity   rr = new RpcResponseEntity(true);
-                    if(RegisterConfig.CONF.isIdentifyEnable()){
+                    if(RegisterConfig.CONF.isSecurityEnable()){
                         if(!RegisterConfig.CONF.getUser().equals(si.getUser())||!RegisterConfig.CONF.getPassword().equals(si.getPassword())){
                             log.error("服务【{}】尝试连接到注册中心失败",si.getName());
                             rr = new RpcResponseEntity(false);
